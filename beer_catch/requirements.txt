@@ -1,28 +1,12 @@
 asgiref==3.2.10
-Django==3.1.2
-psycopg2-binary==2.8.6
-pytz==2020.1
-sqlparse==0.4.1
-asgiref==3.2.10
+certifi==2020.6.20
+chardet==3.0.4
 Django==3.1.2
 djangorestframework==3.12.1
+idna==2.10
+Pillow==7.2.0
 psycopg2-binary==2.8.6
 pytz==2020.1
+requests==2.24.0
 sqlparse==0.4.1
-Package             Version
-------------------- ---------
-asgiref             3.2.10
-certifi             2020.6.20
-chardet             3.0.4
-Django              3.1.2
-djangorestframework 3.12.1
-idna                2.10
-Pillow              7.2.0
-pip                 20.2.3
-psycopg2            2.8.6
-psycopg2-binary     2.8.6
-pytz                2020.1
-requests            2.24.0
-setuptools          47.1.0
-sqlparse            0.4.1
-urllib3             1.25.10
+urllib3==1.25.10
