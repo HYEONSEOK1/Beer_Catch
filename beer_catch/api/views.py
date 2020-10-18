@@ -37,5 +37,11 @@ class UserView(APIView):
     def put(self, request):
         return Response("test ok", status=200)
 
-    def delete(self, request):
-        return Response("test ok", status=200)
+    def delete(self, request, **kwargs):
+        if kwargs.get('user_id') is None:
+            return Response("invalid request", status=status.HTTP_400_BAD_REQUEST)
+        else:
+            user_id = kwargs.get('user_id')
+            user_object = User.objects.get(id=user_id)
+            user_object.delete()
+            return Response("delete ok", status=status.HTTP_200_OK)
