@@ -12,7 +12,7 @@ class User(models.Model):
     email = models.CharField(max_length=100)
     gender = models.CharField(max_length=20)
     type = models.CharField(max_length=20)
-    beer = models.CharField(max_length=5000)
+    beer = models.CharField(max_length=5000, null=True)
 
     class Meta:
         db_table = "User"
