@@ -15,7 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('__all__')
 
 class ReviewSerializer(serializers.ModelSerializer):
-    nickname = serializers.ReadOnlyField(source='user.nickname')
+    
     class Meta:
         model = Review
         fields = ('id', 'content', 'date', 'score', 'beer', 'user')
