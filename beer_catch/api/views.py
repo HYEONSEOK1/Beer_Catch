@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 # Create your views here.
 from api.models import ImageUpload, User, Beer, Review
-from api.serializers import ImageUploadSerializer, UserSerializer, BeerSerializer
+from api.serializers import ImageUploadSerializer, UserSerializer, BeerSerializer, ReviewSerializer
 
 def index(request):
     return render(request, "api/index.html")
