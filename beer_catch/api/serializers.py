@@ -24,4 +24,4 @@ class BeerSerializer(serializers.ModelSerializer):
     review = ReviewSerializer(many=True, read_only=True)
     class Meta:
         model = Beer
-        fields = ('name', 'description', 'country', 'alcohol', 'type', 'ingredient', 'test1', 'test2', 'review')
+        fields = ('id', 'name', 'description', 'country', 'alcohol', 'type', 'ingredient', 'test1', 'test2', 'review')
