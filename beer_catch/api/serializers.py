@@ -18,10 +18,16 @@ class ReviewSerializer(serializers.ModelSerializer):
     nickname = serializers.ReadOnlyField(source='user.nickname')
     class Meta:
         model = Review
+        fields = ('id', 'content', 'date', 'score', 'beer', 'user')
+
+class ReviewInfoSerializer(serializers.ModelSerializer):
+    nickname = serializers.ReadOnlyField(source='user.nickname')
+    class Meta:
+        model = Review
         fields = ('id', 'content', 'date', 'score', 'nickname')
 
 class BeerSerializer(serializers.ModelSerializer):
-    review = ReviewSerializer(many=True, read_only=True)
+    review = ReviewInfoSerializer(many=True, read_only=True)
     class Meta:
         model = Beer
         fields = ('id', 'name', 'description', 'country', 'alcohol', 'type', 'ingredient', 'test1', 'test2', 'review')
