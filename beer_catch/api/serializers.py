@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ImageUpload, User, Beer, Review
+from .models import ImageUpload, User, Beer, Review, Like, Ingredient
 
 class ImageUploadSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True)
@@ -8,14 +8,27 @@ class ImageUploadSerializer(serializers.ModelSerializer):
         model = ImageUpload
         fields = ('url', 'pk', 'title', 'image')
 
+class LikeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Like
+        fields = ('__all__')
+
+class IngredientSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Ingredient
+        fields = ('__all__')
+
 class UserSerializer(serializers.ModelSerializer):
+    like = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = User
-        fields = ('__all__')
+        fields = ('id', 'user_id', 'name', 'nickname', 'email', 'gender', 'type', 'like')
 
 class ReviewSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Review
         fields = ('id', 'content', 'date', 'score', 'beer', 'user')
@@ -28,6 +41,7 @@ class ReviewInfoSerializer(serializers.ModelSerializer):
 
 class BeerSerializer(serializers.ModelSerializer):
     review = ReviewInfoSerializer(many=True, read_only=True)
+    ingredient = serializers.StringRelatedField(many=True)
     class Meta:
         model = Beer
-        fields = ('id', 'name', 'description', 'country', 'alcohol', 'type', 'ingredient', 'test1', 'test2', 'review')
+        fields = ('id', 'kor_name', 'eng_name', 'description', 'country', 'alcohol', 'type', 'ingredient', 'review')
