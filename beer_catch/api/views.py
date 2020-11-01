@@ -92,7 +92,7 @@ class BeerView(APIView):
         if beer_serializer.is_valid():
             beer_serializer.save()
             urlstr = str(request.data.get('image'))
-            urlstr = 'http://13.125.90.172/image/beer/' + urlstr
+            urlstr = 'http://13.125.90.172/images/beer/' + urlstr
             beer_id = beer_serializer.data.get('id')
             beer = Beer.objects.get(id=beer_id)
             beer.image_url = urlstr

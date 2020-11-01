@@ -57,4 +57,4 @@ class BeerSearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Beer
-        fields = ('id', 'kor_name', 'eng_name', 'kor_company_name', 'eng_company_name', 'country_code', 'country_name', 'image', 'rate')
+        fields = ('id', 'kor_name', 'eng_name', 'kor_company_name', 'eng_company_name', 'country_code', 'country_name', 'image_url', 'rate')
