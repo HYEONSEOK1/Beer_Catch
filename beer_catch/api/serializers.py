@@ -44,4 +44,4 @@ class BeerSerializer(serializers.ModelSerializer):
     ingredient = serializers.StringRelatedField(many=True)
     class Meta:
         model = Beer
-        fields = ('id', 'kor_name', 'eng_name', 'description', 'country', 'alcohol', 'type', 'ingredient', 'review')
+        fields = ('id', 'kor_name', 'eng_name', 'description', 'country_code', 'country_name', 'alcohol', 'type', 'ingredient', 'review', 'image', 'rate')

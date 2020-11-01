@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from decimal import Decimal
 
 # Create your models here.
 class ImageUpload(models.Model):
@@ -21,9 +22,12 @@ class Beer(models.Model):
     kor_name = models.CharField(max_length=100)
     eng_name = models.CharField(max_length=100)
     description = models.CharField(max_length=2000, null=True)
-    country = models.CharField(max_length=200, null=True)
+    country_code = models.CharField(max_length=200, null=True)
+    country_name = models.CharField(max_length=200, null=True)
     alcohol = models.CharField(max_length=20, null=True)
     type = models.CharField(max_length=20, null=True)
+    image = models.ImageField(upload_to='beer', null=True)
+    rate = models.CharField(max_length=100, default='0.0')
 
     class Meta:
         db_table = "Beer"
