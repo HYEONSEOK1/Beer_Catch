@@ -119,7 +119,7 @@ class BeerView(APIView):
             return Response("invalid request", status=status.HTTP_400_BAD_REQUEST)
         else:
             beer_id = kwargs.get('beer_id')
-            beer_object = Beer.objects.get(id=beer_id)
+            beer_object = Beer.objects.get(beer_id=beer_id)
             beer_object.delete()
             return Response("delete ok", status=status.HTTP_200_OK)
 
@@ -131,7 +131,7 @@ class BeerInfoView(APIView):
             return Response(beer_queryset_serializer.data, status=status.HTTP_200_OK)
         else:
             beer_id = kwargs.get('beer_id')
-            beer_serializer = BeerInfoSerializer(Beer.objects.get(id=beer_id))
+            beer_serializer = BeerInfoSerializer(Beer.objects.get(beer_id=beer_id))
             return Response(beer_serializer.data, status=status.HTTP_200_OK)
 
 class BeerSearchView(APIView):
