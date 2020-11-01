@@ -21,12 +21,15 @@ class User(models.Model):
 class Beer(models.Model):
     kor_name = models.CharField(max_length=100)
     eng_name = models.CharField(max_length=100)
+    kor_company_name = models.CharField(max_length=100)
+    eng_company_name = models.CharField(max_length=100)
     description = models.CharField(max_length=2000, null=True)
     country_code = models.CharField(max_length=200, null=True)
     country_name = models.CharField(max_length=200, null=True)
     alcohol = models.CharField(max_length=20, null=True)
     type = models.CharField(max_length=20, null=True)
     image = models.ImageField(upload_to='beer', null=True)
+    image_url = models.CharField(max_length=200, null=True)
     rate = models.CharField(max_length=100, default='0.0')
 
     class Meta:
@@ -35,7 +38,7 @@ class Beer(models.Model):
 class Review(models.Model):
     content = models.CharField(max_length=5000)
     date = models.DateField(auto_now_add=True)
-    score = models.IntegerField(null=True)
+    rate = models.IntegerField(null=True)
     user = models.ForeignKey(User, related_name='review', on_delete=models.CASCADE)
     beer = models.ForeignKey(Beer, related_name='review', on_delete=models.CASCADE)
 
