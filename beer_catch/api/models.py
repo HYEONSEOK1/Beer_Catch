@@ -19,6 +19,7 @@ class User(models.Model):
         db_table = "User"
 
 class Beer(models.Model):
+    beer_id=models.IntegerField()
     kor_name = models.CharField(max_length=100)
     eng_name = models.CharField(max_length=100)
     kor_company_name = models.CharField(max_length=100)
