@@ -6,7 +6,7 @@ from django.db.models import Avg
 
 # Create your views here.
 from api.models import ImageUpload, User, Beer, Review, Like, Ingredient
-from api.serializers import ImageUploadSerializer, UserSerializer, BeerSerializer
+from api.serializers import ImageUploadSerializer, UserSerializer, BeerSerializer, BeerInfoSerializer, BeerSearchSerializer
 from api.serializers import ReviewSerializer, LikeSerializer, IngredientSerializer
 
 def index(request):
@@ -55,8 +55,8 @@ class ReviewView(APIView):
             review_serializer.save()
             beer_num = request.data.get('beer')
             beer = Beer.objects.get(id=beer_num)
-            avg_score = Review.objects.filter(beer=beer_num).aggregate(Avg('score'))
-            avg_value = round(avg_score['score__avg'],1)
+            avg_rate = Review.objects.filter(beer=beer_num).aggregate(Avg('rate'))
+            avg_value = round(avg_rate['rate__avg'], 2)
             beer.rate = str(avg_value)
             beer.save()
 
@@ -91,6 +91,12 @@ class BeerView(APIView):
         beer_serializer = BeerSerializer(data=request.data)
         if beer_serializer.is_valid():
             beer_serializer.save()
+            urlstr = str(request.data.get('image'))
+            urlstr = 'http://13.125.90.172/image/beer/' + urlstr
+            beer_id = beer_serializer.data.get('id')
+            beer = Beer.objects.get(id=beer_id)
+            beer.image_url = urlstr
+            beer.save()
             return Response(beer_serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(beer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -116,6 +122,24 @@ class BeerView(APIView):
             beer_object = Beer.objects.get(id=beer_id)
             beer_object.delete()
             return Response("delete ok", status=status.HTTP_200_OK)
+
+class BeerInfoView(APIView):
+    def get(self, request,  **kwargs):
+        if kwargs.get('beer_id') is None:
+            beer_queryset = Beer.objects.all()
+            beer_queryset_serializer = BeerInfoSerializer(beer_queryset, many=True)
+            return Response(beer_queryset_serializer.data, status=status.HTTP_200_OK)
+        else:
+            beer_id = kwargs.get('beer_id')
+            beer_serializer = BeerInfoSerializer(Beer.objects.get(id=beer_id))
+            return Response(beer_serializer.data, status=status.HTTP_200_OK)
+
+class BeerSearchView(APIView):
+    def get(self, request,  **kwargs):
+        beer_queryset = Beer.objects.all()
+        beer_queryset_serializer = BeerSearchSerializer(beer_queryset, many=True)
+        return Response(beer_queryset_serializer.data, status=status.HTTP_200_OK)
+
 
 class LikeView(APIView):
     def post(self, request):

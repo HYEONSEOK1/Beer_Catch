@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Start</title>
-</head>
-<body>
-    <h1>Hi</h1>
-    <li class="nav-item">
-       {% if user.is_authenticated %} {# 유저가 로그인 중이면 #}
-       <a href="{% url 'account_logout' %}" class="nav-link">Logout</a>
-       {% else %}
-       <a href="{% url 'account_login' %}" class="nav-link">Login</a>
-       {% endif %}
-    </li>
-</body>
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Start</title>
+  </head>
+  <body>
+      <h1>Hi</h1>
+      <li class="nav-item">
+         {% if user.is_authenticated %} {# 유저가 로그인 중이면 #}
+         <a href="{% url 'account_logout' %}" class="nav-link">Logout</a>
+         {% else %}
+         <a href="{% url 'account_login' %}" class="nav-link">Login</a>
+         {% endif %}
+      </li>
+  </body>
 </html>
