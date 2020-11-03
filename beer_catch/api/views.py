@@ -7,7 +7,7 @@ from django.db.models import Avg
 # Create your views here.
 from api.models import ImageUpload, User, Beer, Review, Like, Ingredient
 from api.serializers import ImageUploadSerializer, UserSerializer, BeerSerializer, BeerInfoSerializer, BeerSearchSerializer
-from api.serializers import ReviewSerializer, LikeSerializer, IngredientSerializer
+from api.serializers import ReviewSerializer, LikeSerializer, IngredientSerializer, BeerRateSearchSerializer
 
 def index(request):
     return render(request, "api/index.html")
@@ -136,9 +136,18 @@ class BeerInfoView(APIView):
 
 class BeerSearchView(APIView):
     def get(self, request,  **kwargs):
-        beer_queryset = Beer.objects.all()
-        beer_queryset_serializer = BeerSearchSerializer(beer_queryset, many=True)
-        return Response(beer_queryset_serializer.data, status=status.HTTP_200_OK)
+        if kwargs.get('beer_id') is None:
+            beer_queryset = Beer.objects.all()
+            beer_queryset_serializer = BeerSearchSerializer(beer_queryset, many=True)
+            return Response(beer_queryset_serializer.data, status=status.HTTP_200_OK)
+        else:
+            beer_id = kwargs.get('beer_id')
+            id = Beer.objects.get(beer_id=beer_id).id
+            beer_queryset = Beer.objects.filter(id__lte=id)
+            beer_new_queryset = Beer.objects.filter(id__gt=id)
+            beer_queryset_serializer = BeerRateSearchSerializer(beer_queryset, many=True)
+            beer_new_queryset_serializer = BeerSearchSerializer(beer_new_queryset, many=True)
+            return Response(beer_queryset_serializer.data + beer_new_queryset_serializer.data, status=status.HTTP_200_OK)
 
 
 class LikeView(APIView):
