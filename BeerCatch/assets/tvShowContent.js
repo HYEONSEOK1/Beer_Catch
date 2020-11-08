@@ -1,0 +1,40 @@
+export default {
+  title: '평점 & 리뷰',
+  kor_name: '테라',
+  eng_name: 'Tera',
+  country_code: 'KR',
+  country_name: 'Korea',
+  overview: ` 테라는 하이트진로에서 발매하는 맥주 브랜드이다. 2019년 3월 처음 발매되었다. 2019년 7월과 8월에 2억병을 판매하였다. 미쉐린 가이드 서울의 공식 맥주 파트너이다. `,
+  ingredient: ['정제수', '맥아 (호주)', '전분 (러시아, 헝가리, 세르비아 등)', '호프 (독일, 미국)', '산도조절제 (안산, 황산칼슘)', '효소제', '영양강화제'],
+  alcohol: "5",
+  type: "라거",
+  review: [
+    {
+      "id": 1,
+      "content": "시원하고 맛있어요!",
+      "date": "2020-11-01",
+      "rate": 2,
+      "nickname": "황선주의 눈물",
+    },
+    {
+      "id": 2,
+      "content": "시원하지만 맛있어요!",
+      "date": "2020-11-02",
+      "rate": 3,
+      "nickname": "김현석의 눈물",
+    },
+  ],
+  rate: 3.7,
+  image: require('./doctorwho.jpg'),
+  year: 2005,
+
+  keywords: [
+    'time travel',
+    'time machine',
+    'phone booth',
+    'alien',
+    'time traveler',
+    'police box',
+    'space and aliens',
+  ],
+};
