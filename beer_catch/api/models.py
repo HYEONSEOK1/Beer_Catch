@@ -8,6 +8,9 @@ from django.conf import settings
 
 # Create your models here.
 
+def profile_path(instance, filename):
+    return 'profile/{}.png'.format(instance.user_id)
+
 class OverwriteStorage(FileSystemStorage):
 
     def get_available_name(self, name, max_length=None):
@@ -27,7 +30,16 @@ class User(models.Model):
     email = models.CharField(max_length=100)
     gender = models.CharField(max_length=20)
     type = models.CharField(max_length=20)
-    profile_image = models.ImageField(upload_to='profile', null=True, storage=OverwriteStorage())
+    profile = models.ImageField(upload_to=profile_path, null=True, storage=OverwriteStorage())
+    profile_url = models.CharField(max_length=200, null=True)
+
+    def save(self, *args, **kwargs):
+        if self.user_id is None:
+            temp_image = self.profile
+            self.profile = None
+            super().save(*args, **kwargs)
+            self.profile = temp_image
+        super().save(*args, **kwargs)
 
     class Meta:
         db_table = "User"
@@ -45,7 +57,7 @@ class Beer(models.Model):
     type = models.CharField(max_length=20, null=True)
     image = models.ImageField(upload_to='beer', null=True, storage=OverwriteStorage())
     image_url = models.CharField(max_length=200, null=True)
-    rate = models.CharField(max_length=100, default='0.0')
+    total_rate = models.CharField(max_length=100, default='0.0')
 
     class Meta:
         db_table = "Beer"
@@ -57,6 +69,7 @@ class Review(models.Model):
     rate = models.IntegerField(null=True)
     user_id = models.ForeignKey(User, related_name='review', on_delete=models.CASCADE)
     beer_id = models.ForeignKey(Beer, related_name='review', on_delete=models.CASCADE)
+    total_like = models.IntegerField(default=0)
 
     class Meta:
         db_table = "Review"

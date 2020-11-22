@@ -30,7 +30,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('user_id', 'name', 'nickname', 'email', 'gender', 'type')
+        fields = ('user_id', 'name', 'nickname', 'email', 'gender', 'type', 'profile')
 
 class ReviewSerializer(serializers.ModelSerializer):
 
@@ -40,32 +40,33 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class ReviewInfoSerializer(serializers.ModelSerializer):
     nickname = serializers.ReadOnlyField(source='user_id.nickname')
+    profile_url = serializers.ReadOnlyField(source='user_id.profile_url')
     class Meta:
         model = Review
-        fields = ('review_id', 'content', 'date', 'rate', 'beer_id', 'nickname')
+        fields = ('review_id', 'content', 'date', 'rate', 'beer_id', 'nickname', 'profile_url', 'total_like')
 
 class BeerSerializer(serializers.ModelSerializer):
     review = ReviewInfoSerializer(many=True, read_only=True)
     ingredient = serializers.StringRelatedField(many=True)
     class Meta:
         model = Beer
-        fields = ('beer_id', 'kor_name', 'eng_name', 'kor_company_name', 'eng_company_name', 'description', 'country_code', 'country_name', 'alcohol', 'type', 'ingredient', 'review', 'image', 'rate')
+        fields = ('beer_id', 'kor_name', 'eng_name', 'kor_company_name', 'eng_company_name', 'description', 'country_code', 'country_name', 'alcohol', 'type', 'ingredient', 'review', 'image', 'total_rate')
 
 class BeerInfoSerializer(serializers.ModelSerializer):
     review = ReviewInfoSerializer(many=True, read_only=True)
     ingredient = serializers.StringRelatedField(many=True)
     class Meta:
         model = Beer
-        fields = ('beer_id', 'kor_name', 'eng_name', 'kor_company_name', 'eng_company_name', 'description', 'country_code', 'country_name', 'alcohol', 'type', 'ingredient', 'review', 'image_url', 'rate')
+        fields = ('beer_id', 'kor_name', 'eng_name', 'kor_company_name', 'eng_company_name', 'description', 'country_code', 'country_name', 'alcohol', 'type', 'ingredient', 'review', 'image_url', 'total_rate')
 
 class BeerSearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Beer
-        fields = ('beer_id', 'kor_name', 'eng_name', 'kor_company_name', 'eng_company_name', 'country_code', 'country_name', 'image_url', 'rate')
+        fields = ('beer_id', 'kor_name', 'eng_name', 'kor_company_name', 'eng_company_name', 'country_code', 'country_name', 'image_url', 'total_rate')
 
 class BeerRateSearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Beer
-        fields = ('beer_id', 'rate')
+        fields = ('beer_id', 'total_rate')

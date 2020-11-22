@@ -22,6 +22,11 @@ class UserView(APIView):
         user_serializer = UserSerializer(data=request.data)
         if user_serializer.is_valid():
             user_serializer.save()
+            user_id = user_serializer.data.get('user_id')
+            urlstr = 'http://13.125.90.172/images/profile/' + user_id + '.png'
+            user = User.objects.get(user_id=user_id)
+            user.profile_url = urlstr
+            user.save()
             result = {'result' : "SignUp"}
             result.update(user_serializer.data)
             return Response(result, status=status.HTTP_201_CREATED)
@@ -61,10 +66,13 @@ class ReviewView(APIView):
             beer = Beer.objects.get(beer_id=beer_id)
             avg_rate = Review.objects.filter(beer_id=beer_id).aggregate(Avg('rate'))
             avg_value = round(avg_rate['rate__avg'], 2)
-            beer.rate = str(avg_value)
+            beer.total_rate = str(avg_value)
             beer.save()
+            result = {'result' : 'success'}
+            result.update(review_serializer.data)
+            result.update({'total_rate' : beer.total_rate})
 
-            return Response(review_serializer.data, status=status.HTTP_201_CREATED)
+            return Response(result, status=status.HTTP_201_CREATED)
         else:
             return Response(review_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -153,7 +161,7 @@ class BeerInfoView(APIView):
                         nickname = review['nickname']
                         review_id = review['review_id']
                         review_like = ReviewLike.objects.filter(review_id=review_id, user_id=user_id)
-                        if review_like.count() is 1:
+                        if review_like.count() == 1:
                             review.update({'review_like' : 1})
                         else:
                             review.update({'review_like' : 0})
@@ -180,8 +188,16 @@ class BeerLikeView(APIView):
     def post(self, request):
         beer_like_serializer = BeerLikeSerializer(data=request.data)
         if beer_like_serializer.is_valid():
-            beer_like_serializer.save()
-            return Response(beer_like_serializer.data, status=status.HTTP_201_CREATED)
+            beer_id = request.data.get('beer_id')
+            user_id = request.data.get('user_id')
+            try:
+                beer_like = BeerLike.objects.get(beer_id=beer_id, user_id=user_id)
+            except BeerLike.DoesNotExist:
+                result = {'result' : 'success'}
+                beer_like_serializer.save()
+                result.update(beer_like_serializer.data)
+                return Response(result, status=status.HTTP_201_CREATED)
+            return Response(beer_like_serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(beer_like_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -211,8 +227,20 @@ class ReviewLikeView(APIView):
     def post(self, request):
         review_like_serializer = ReviewLikeSerializer(data=request.data)
         if review_like_serializer.is_valid():
-            review_like_serializer.save()
-            return Response(review_like_serializer.data, status=status.HTTP_201_CREATED)
+            review_id = request.data.get('review_id')
+            user_id = request.data.get('user_id')
+            try:
+                review_like = ReviewLike.objects.get(review_id=review_id, user_id=user_id)
+            except ReviewLike.DoesNotExist:
+                result = {'result' : 'success'}
+                review_like_serializer.save()
+                review_id = request.data.get('review_id')
+                review = Review.objects.get(review_id=review_id)
+                review.total_like += 1
+                review.save()
+                result.update(review_like_serializer.data)
+                return Response(result, status=status.HTTP_201_CREATED)
+            return Response(review_like_serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(review_like_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -235,6 +263,10 @@ class ReviewLikeView(APIView):
         else:
             review_like_id = kwargs.get('review_like_id')
             review_like_object = ReviewLike.objects.get(review_like_id=review_like_id)
+            review_id = review_like_object.review_id.review_id
+            review = Review.objects.get(review_id=review_id)
+            review.total_like -= 1
+            review.save()
             review_like_object.delete()
             return Response("delete ok", status=status.HTTP_200_OK)
 

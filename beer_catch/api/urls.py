@@ -20,9 +20,9 @@ urlpatterns = [
     path('review/', views.ReviewView.as_view()),
     path('review/<int:review_id>', views.ReviewView.as_view()),
     path('beerlike/', views.BeerLikeView.as_view()),
-    path('beerlike/<int:review_id>', views.BeerLikeView.as_view()),
+    path('beerlike/<int:beer_like_id>', views.BeerLikeView.as_view()),
     path('reviewlike/', views.ReviewLikeView.as_view()),
-    path('reviewlike/<int:review_id>', views.ReviewLikeView.as_view()),
+    path('reviewlike/<int:review_like_id>', views.ReviewLikeView.as_view()),
     path('ingredient/', views.IngredientView.as_view()),
     path('ingredient/<int:review_id>', views.IngredientView.as_view()),
 ]
