@@ -19,8 +19,10 @@ urlpatterns = [
     path('beer_search/<int:beer_id>', views.BeerSearchView.as_view()),
     path('review/', views.ReviewView.as_view()),
     path('review/<int:review_id>', views.ReviewView.as_view()),
-    path('like/', views.LikeView.as_view()),
-    path('like/<int:review_id>', views.LikeView.as_view()),
+    path('beerlike/', views.BeerLikeView.as_view()),
+    path('beerlike/<int:review_id>', views.BeerLikeView.as_view()),
+    path('reviewlike/', views.ReviewLikeView.as_view()),
+    path('reviewlike/<int:review_id>', views.ReviewLikeView.as_view()),
     path('ingredient/', views.IngredientView.as_view()),
     path('ingredient/<int:review_id>', views.IngredientView.as_view()),
 ]

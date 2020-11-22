@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ImageUpload, User, Beer, Review, Like, Ingredient
+from .models import ImageUpload, User, Beer, Review, BeerLike, ReviewLike, Ingredient
 
 class ImageUploadSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True)
@@ -8,10 +8,16 @@ class ImageUploadSerializer(serializers.ModelSerializer):
         model = ImageUpload
         fields = ('url', 'pk', 'title', 'image')
 
-class LikeSerializer(serializers.ModelSerializer):
+class BeerLikeSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Like
+        model = BeerLike
+        fields = ('__all__')
+
+class ReviewLikeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ReviewLike
         fields = ('__all__')
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -21,30 +27,29 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = ('__all__')
 
 class UserSerializer(serializers.ModelSerializer):
-    like = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = User
-        fields = ('id', 'user_id', 'name', 'nickname', 'email', 'gender', 'type', 'like')
+        fields = ('user_id', 'name', 'nickname', 'email', 'gender', 'type')
 
 class ReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
-        fields = ('id', 'content', 'date', 'rate', 'beer', 'user')
+        fields = ('review_id', 'content', 'date', 'rate', 'beer_id', 'user_id')
 
 class ReviewInfoSerializer(serializers.ModelSerializer):
-    nickname = serializers.ReadOnlyField(source='user.nickname')
+    nickname = serializers.ReadOnlyField(source='user_id.nickname')
     class Meta:
         model = Review
-        fields = ('id', 'content', 'date', 'rate', 'nickname')
+        fields = ('review_id', 'content', 'date', 'rate', 'beer_id', 'nickname')
 
 class BeerSerializer(serializers.ModelSerializer):
     review = ReviewInfoSerializer(many=True, read_only=True)
     ingredient = serializers.StringRelatedField(many=True)
     class Meta:
         model = Beer
-        fields = ('id', 'beer_id', 'kor_name', 'eng_name', 'kor_company_name', 'eng_company_name', 'description', 'country_code', 'country_name', 'alcohol', 'type', 'ingredient', 'review', 'image', 'rate')
+        fields = ('beer_id', 'kor_name', 'eng_name', 'kor_company_name', 'eng_company_name', 'description', 'country_code', 'country_name', 'alcohol', 'type', 'ingredient', 'review', 'image', 'rate')
 
 class BeerInfoSerializer(serializers.ModelSerializer):
     review = ReviewInfoSerializer(many=True, read_only=True)
