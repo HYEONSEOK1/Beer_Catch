@@ -11,6 +11,7 @@ import TestScreen from './TestScreen'
 import RankingScreen from './RankingScreen/index';
 
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import AccountScreen from './AccountScreen';
 
 
 const Tab = createMaterialTopTabNavigator();
@@ -24,8 +25,8 @@ const tabBarIcon = (focused, name) => {
     else if (name === 'Community') {
         iconName = 'people-outline'
     }
-    else if (name === 'MyAccount') {
-        iconName = 'person'
+    else if (name === 'Account') {
+        iconName = 'person-outline'
     }
     else if (name === 'Ranking') {
         iconName = 'trophy-outline'
@@ -70,11 +71,20 @@ MainScreen = (navigation) => {
                 <Tab.Screen name="Search" component={SearchScreen} />
                 <Tab.Screen name="Ranking" component={RankingScreen} />
                 <Tab.Screen name="Community" component={CommunityScreen} />
+                <Tab.Screen name="Account" component={AccountScreen} />
             </Tab.Navigator>
             <ActionButton
                 buttonColor="#FED52B"
                 offsetX={20}
                 offsetY={70}
+                hideShadow={false} fixNativeFeedbackRadius={true}
+                shadowStyle={{
+                    shadowColor: 'black',
+                    shadowOpacity: 0.7,
+                    shadowOffset: { width: 20, height: 20 },
+                    shadowRadius: 10,
+                    elevation: 7,
+                    }}
                 renderIcon={active => active ?
                     (<Ionicons name="camera-outline"
                         style={{

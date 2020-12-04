@@ -100,7 +100,7 @@ export default class index extends Component {
         //   <Infofo id={item.id}/>
         //   </View> 
         <View style={styles.slide}>
-      <Infofo id={item.id}/>
+      <Infofo beer_id={item.beer_id} navigation = {this.props.navigation}/>
       </View>
           )
       }
@@ -108,6 +108,7 @@ export default class index extends Component {
   }
   render() {
     const BeerInfo = this.props.route.params.BeerInfo;
+    console.warn(BeerInfo);
     return (
       <View style={styles.container}>
       <StatusBar barStyle="light-content" />

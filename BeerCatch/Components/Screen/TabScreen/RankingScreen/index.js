@@ -8,7 +8,7 @@ import RankingTabScreen from './RankingTabScreen';
 const PARALLAX_HEADER_HEIGHT = hp('20%');
 
 
-export default function RankingScreen() {
+export default function RankingScreen({navigation}) {
   
     return (
       <SafeAreaView style={styles.safeAreaViewStyle}>
@@ -41,7 +41,7 @@ export default function RankingScreen() {
         <Text style={{fontSize:20, fontWeight:"bold",color:"#333"}}>Beer's Ranking</Text>
         
         </View>
-        <RankingTabScreen/>
+        <RankingTabScreen navigation={navigation}/>
       </SafeAreaView>
 
     );

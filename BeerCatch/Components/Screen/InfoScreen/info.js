@@ -12,7 +12,7 @@ import {
   FlatList,
   LogBox
 } from 'react-native';
-
+import Modal from 'react-native-modal';
 import axios from 'axios';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -22,6 +22,7 @@ import tvShowContent from '../../../assets/tvShowContent';
 import LinearGradient from 'react-native-linear-gradient';
 import Flag from 'react-native-flags';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {AutoGrowingTextInput} from 'react-native-autogrow-textinput';
 const Gradationcolor = () => {
   return (
     <LinearGradient
@@ -39,19 +40,26 @@ class InfoScreen extends Component {
   }
   state = {
     BeerInfo: [],
-    BeerRate: 0,
+    review:[],
+    bReady: 0,
+    isReviewModalVisible: false,
+    user_id:1122334455,
+    user_nickname:"비어캐치",
+    textValue:"",
+    rateValue:0,
   }
   componentDidMount() {
-    console.warn(this.props.id); 
     //this.props.route.params.BeerInfo.id;
-    let url = 'http://13.125.90.172/api/beer_info/' + this.props.id
+    let url = 'http://13.125.90.172/api/beer_info/' + this.props.beer_id + '?user_id=' + this.state.user_id
+    console.warn(url);
     axios
       .get(url)
       .then(({ data }) => {
 
         this.setState({
           BeerInfo: data,
-          BeerRate: 3.3,
+          review : data.review,
+          bReady: 1,
         });
       })
       .catch(e => {  // API 호출이 실패한 경우
@@ -61,6 +69,66 @@ class InfoScreen extends Component {
       });
 
   }
+  SendReview  = async function () {
+    this.toggleReviewModal();
+    let url = 'http://13.125.90.172/api/review/'
+        let options = {
+            method: 'POST',
+            url: url,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8'
+            },
+            data: {
+              content: this.state.textValue,
+              rate: this.state.rateValue,
+              user_id: this.state.user_id,
+              beer_id: this.props.beer_id,
+            }
+        };
+        let response = await axios(options);
+        console.warn(response);
+        console.warn(this.state.review);
+      this.setState({
+        review: this.state.review.concat(
+        {
+          ...response.data,
+          nickname:this.state.user_nickname
+        }
+          )
+    })
+     
+  }
+    SendReviewLike = () => {
+       //this.props.route.params.BeerInfo.id;
+    let url = 'http://13.125.90.172/api/beer_info/' + this.props.beer_id + '?user_id=' + this.state.user_id
+    console.warn(url);
+    axios
+      .get(url)
+      .then(({ data }) => {
+
+        this.setState({
+          BeerInfo: data,
+          bReady: 1,
+        });
+      })
+      .catch(e => {  // API 호출이 실패한 경우
+        console.error(e);  // 에러표시
+        this.setState({
+        });
+      });
+
+    };
+    _onChange(event) {
+      this.setState({ textValue: event.nativeEvent.text || '' });
+    }
+    toggleReviewModal = () => (
+      
+      this.setState(prevState => ({
+        textValue:"",
+        rateValue:0,
+        isReviewModalVisible: !prevState.isReviewModalVisible,
+      })));
   renderIngredient = (Ingredient) => {
     if (!Ingredient)
       return;
@@ -71,6 +139,7 @@ class InfoScreen extends Component {
     );
   }
   renderReview(item) {
+    console.warn(item);
     return (
       <Fragment>
         <View style={{
@@ -83,6 +152,7 @@ class InfoScreen extends Component {
               <Text>{item.nickname}</Text>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Stars
+
                   default={Number(item.rate)}
                   spacing={2}
                   count={5}
@@ -96,9 +166,10 @@ class InfoScreen extends Component {
             </View>
           </View>
           <Text>{item.content}</Text>
-          <View style={{ alignItems: "flex-end", margin: 20 }}>
-            <Ionicons name="thumbs-up-outline" style={{ fontSize: 20, height: 20, color: '#aaa' }} />
-
+          <View style={{ margin: 10,flexDirection:"row", justifyContent:"flex-end" }}>
+            <TouchableOpacity style={[styles.flipButton,{flexDirection:"row",flex: 0.2,padding: 2,}]}>
+            <Text>공감  </Text><Ionicons name="thumbs-up-outline" style={{ fontSize: 15, height: 15, color: '#aaa' }} />
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -111,7 +182,6 @@ class InfoScreen extends Component {
     const BeerInfo = this.state.BeerInfo;
     //const BeerInfo = Object.assign({}, ...this.state.BeerInfo)
     return (
-
       <ParallaxScrollView
         onScroll={onScroll}
 
@@ -152,63 +222,126 @@ class InfoScreen extends Component {
           </View>
         )}
 
-        renderForeground={() => (
-          <View key="parallax-header" style={styles.parallaxHeader}>
-            <Image style={{
-              width: wp('35%'),
-              height: hp('35%'),
-              resizeMode: 'contain',
-              position: 'absolute',
-              right: wp('10%'),
-              bottom: 0,
-            }} source={{ uri: BeerInfo.image_url }} />
-            <Image style={{
-              height: hp('7%'),
-              resizeMode: 'contain',
-              position: 'absolute',
-              left: wp('0%'),
-              top: 0,
-            }} source={
-              require('../../../assets/images/back.png')
-            } />
-            <Image style={{
-              height: hp('7%'),
-              resizeMode: 'contain',
-              position: 'absolute',
-              right: wp('10%'),
-              top: 0,
-            }} source={
-              require('../../../assets/images/addsome.png')
-            } />
-            <Image style={{
-              height: hp('7%'),
-              resizeMode: 'contain',
-              position: 'absolute',
-              right: wp('-3%'),
-              top: 0,
-            }} source={
-              require('../../../assets/images/favorite.png')
-            } />
-            <View
-              style={{
-                height: hp('33%'),
-                width: wp('47%'),
-                resizeMode: 'contain',
-                position: 'absolute',
-                left: wp('5%'),
-                bottom: 0,
+        renderForeground={() => {
+          if (this.state.bReady == 1) {
+            return (
+              <View key="parallax-header" style={styles.parallaxHeader}>
+                <Image style={{
+                  width: wp('35%'),
+                  height: hp('35%'),
+                  resizeMode: 'contain',
+                  position: 'absolute',
+                  right: wp('10%'),
+                  bottom: 0,
+                }} source={{ uri: BeerInfo.image_url }} />
+                <TouchableOpacity
+                  onPress={() => this.props.navigation.goBack()}
+                  style={{
+                    height: hp('7%'),
+                    position: 'absolute',
+                    left: -hp('1.5%'),
+                    justifyContent: "flex-end",
+                    alignItems: "flex-start"
+                  }}>
+                  <Image
+                    style={{
+                      height: hp('7%'),
+                      resizeMode: 'contain',
+                    }}
+                    source={
+                      require('../../../assets/images/back.png')
+                    } />
+                </TouchableOpacity>
+                <Image style={{
+                  height: hp('7%'),
+                  resizeMode: 'contain',
+                  position: 'absolute',
+                  right: wp('10%'),
+                  top: 0,
+                }} source={
+                  require('../../../assets/images/addsome.png')
+                } />
+                <Image style={{
+                  height: hp('7%'),
+                  resizeMode: 'contain',
+                  position: 'absolute',
+                  right: wp('-3%'),
+                  top: 0,
+                }} source={
+                  require('../../../assets/images/favorite.png')
+                } />
+                <View
+                  style={{
+                    height: hp('33%'),
+                    width: wp('47%'),
+                    resizeMode: 'contain',
+                    position: 'absolute',
+                    left: wp('5%'),
+                    bottom: 0,
 
-              }}
-            >
-              <Text style={styles.sectionKorText}>{BeerInfo.kor_name} </Text>
-              <Text style={styles.sectionEngText}>( {BeerInfo.eng_name} )</Text>
+                  }}
+                >
+                  <Text style={styles.sectionKorText}>{BeerInfo.kor_name} </Text>
+                  <Text style={styles.sectionEngText}>( {BeerInfo.eng_name} )</Text>
 
-              <Text style={styles.sectionTitleText}>{BeerInfo.description}</Text>
-            </View>
+                  <Text style={styles.sectionTitleText}>{BeerInfo.description}</Text>
+                </View>
 
 
-          </View>
-        )}
+              </View>
+            )
+          }
+          else {
+            return (
+              <View key="parallax-header" style={styles.parallaxHeader}>
+                <Image style={{
+                  width: wp('35%'),
+                  height: hp('35%'),
+                  resizeMode: 'contain',
+                  position: 'absolute',
+                  right: wp('10%'),
+                  bottom: 0,
+                }} source={{ uri: BeerInfo.image_url }} />
+                <TouchableOpacity
+                  onPress={() => this.props.navigation.goBack()}
+                  style={{
+                    height: hp('7%'),
+                    position: 'absolute',
+                    left: -hp('1.5%'),
+                    justifyContent: "flex-end",
+                    alignItems: "flex-start"
+                  }}>
+                  <Image
+                    style={{
+                      height: hp('7%'),
+                      resizeMode: 'contain',
+                    }}
+                    source={
+                      require('../../../assets/images/back.png')
+                    } />
+                </TouchableOpacity>
+                <Image style={{
+                  height: hp('7%'),
+                  resizeMode: 'contain',
+                  position: 'absolute',
+                  right: wp('10%'),
+                  top: 0,
+                }} source={
+                  require('../../../assets/images/addsome.png')
+                } />
+                <Image style={{
+                  height: hp('7%'),
+                  resizeMode: 'contain',
+                  position: 'absolute',
+                  right: wp('-3%'),
+                  top: 0,
+                }} source={
+                  require('../../../assets/images/favorite.png')
+                } />
+              </View>
+            )
+          }
+        }}
 
       // renderStickyHeader={() => (
       //   <View key="sticky-header" style={styles.stickySection}>
@@ -265,6 +398,60 @@ class InfoScreen extends Component {
       //   </View>
       // )}
       >
+        <Modal
+          isVisible={this.state.isReviewModalVisible}
+          style={{ justifyContent: "center", alignItems: "center", }}
+          onBackdropPress={() => this.toggleReviewModal()}
+        >
+          <View style={{
+            alignItems: "center",
+            justifyContent: "flex-start",
+            height: hp("50%"),
+            width: wp("70%"),
+            backgroundColor: "white",
+            borderRadius: hp("1%"),
+          }
+          }>
+            <Text style={styles.ModalText}>리뷰를 작성해주세요!</Text>
+            <Stars
+              default={0}
+              spacing={2}
+              count={5}
+              update={(val)=>{this.setState({rateValue: val})}}
+              starSize={hp("5%")}
+              fullStar={require('../../../assets/images/fullstar.png')}
+              emptyStar={require('../../../assets/images/nonstar.png')}
+              style={{paddingTop:50}} />
+           
+            <AutoGrowingTextInput
+        value={this.state.textValue}
+        onChange={(event) => this._onChange(event)}
+            style={{
+              fontSize: 15,
+              width:wp("60%"),
+              margin:20,
+              backgroundColor: 'white',
+              borderWidth: 0.2,
+            borderColor:"#111",
+            }}
+            placeholder={'Review'}
+            placeholderTextColor='#66737C'
+            maxHeight={hp("23%")}
+            minHeight={hp("5%")}
+            enableScrollToCaret
+           
+          />
+           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between",}}>
+              <TouchableOpacity style={styles.flipButton} onPress={() => this.SendReview()}>
+                <Text style={styles.ContentButtonText}>등록</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.flipButton} onPress={() => this.toggleReviewModal()}>
+                <Text style={styles.ContentButtonText}>취소</Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+        </Modal>
 
         <View style={styles.section}>
           <Text style={styles.ContentTitleText}>정보</Text>
@@ -294,12 +481,12 @@ class InfoScreen extends Component {
           {this.renderIngredient(BeerInfo.ingredient)}
         </View>
 
-        <View style={[styles.section,{ flexDirection:"row", alignItems:"center",justifyContent:"space-between" } ]}>
+        <View style={[styles.section, { flexDirection: "row", alignItems: "center", justifyContent: "space-between" }]}>
           <Text style={styles.ContentTitleText}>평점 & 리뷰</Text>
-          <TouchableOpacity style={styles.flipButton}>
+          <TouchableOpacity style={styles.flipButton} onPress={() => this.toggleReviewModal()}>
             <Text style={styles.ContentButtonText}>리뷰 쓰기</Text>
-        </TouchableOpacity>
-          
+          </TouchableOpacity>
+
         </View>
         <View style={{ alignItems: 'center', paddingTop: 15, paddingBottom: 30 }}>
           <Rating
@@ -309,9 +496,9 @@ class InfoScreen extends Component {
             ratingBackgroundColor="#fff3cc"
             readonly="true"
             fractions={0}
-            startingValue={BeerInfo.rate}
+            startingValue={BeerInfo.total_rate}
             imageSize={wp("12%")}
-            
+
             style={{ paddingVertical: 10 }}
           />
           {/* <Stars
@@ -325,14 +512,16 @@ class InfoScreen extends Component {
             emptyStar={require('../../../assets/images/nonstar.png')}
             disabled={true}
           /> */}
-          <Text style={styles.ContentTitleText}>{BeerInfo.rate}</Text>
+          <Text style={styles.ContentTitleText}>{BeerInfo.total_rate}</Text>
         </View>
         <FlatList
-          data={BeerInfo.review}
+          data={this.state.review}
           renderItem={({ item }) => this.renderReview(item)}
           keyExtractor={(item, index) => index.toString()}
         />
+
       </ParallaxScrollView>
+
     )
   }
 }
@@ -356,9 +545,17 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#cccccc',
     backgroundColor: 'white',
-
   },
-
+  ModalText: {
+    color: 'black',
+    fontSize: wp('6%'),
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: 'black',
+    fontFamily: 'NanumSquareRoundL',
+    fontWeight: 'bold',
+    paddingVertical:20
+  },
   container: {
     flex: 1,
     backgroundColor: 'black'
@@ -428,7 +625,7 @@ const styles = StyleSheet.create({
   },
   ContentButtonText: {
     fontSize: 15,
-    color:"#555"
+    color: "#555"
   },
   ContentIngredientText: {
     color: 'black',
@@ -472,7 +669,7 @@ const styles = StyleSheet.create({
   flipButton: {
     flex: 0.3,
     height: 30,
-    width:20,
+    width: 20,
     marginHorizontal: 2,
     borderRadius: 8,
     borderColor: '#ddd',
@@ -481,7 +678,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'white',
-},
+  },
 });
 LogBox.ignoreAllLogs();
 export default InfoScreen;

@@ -13,7 +13,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import Ionicons from 'react-native-vector-icons/Ionicons';
 // eslint-disable-next-line import/no-unresolved
 import { RNCamera } from 'react-native-camera';
-
+import ImagePicker from 'react-native-image-picker';
 const flashModeOrder = {
     off: 'on',
     on: 'auto',
@@ -41,12 +41,18 @@ export default class CameraScreen extends React.Component {
         isCamera: false,
         VideoData: [],
         content: [],
+        height:0,
+        width:0,
     };
 
     takePicture = async function () {
         const options = { quality: 0.5, base64: true };
         const data = await this.camera.takePictureAsync(options);
         //  eslint-disable-next-line
+        const width= data.height;
+        const height= data.width;
+        data.width =width;
+        data.height =height;
         this.setState({ VideoData: data, });
         let ttt = new FormData();
         let filename = data.uri.split('/').pop();
@@ -75,16 +81,50 @@ export default class CameraScreen extends React.Component {
             this.setState({ content: content, })
             this.setState({
                 content: this.state.content.map(
-                    item => ({ ...item, bToggle: 0 })
+                    item => ({ ...item, bToggle: 0, beer_id: item.id })
                 )
             })
             this.setState({ isCamera: true })
         }
     };
+    showPicker = async function () {
+        var self = this;
+        ImagePicker.launchImageLibrary({ mediaType: 'photo', includeBase64: true, quality: 0.5 }, async function(response) {
+            self.setState({ VideoData: response, });
+            let ttt = new FormData();
+            let filename = response.uri.split('/').pop();
+            ttt.append('file', { uri: response.uri, name: filename, type: 'image/jpg', });
+            var sssssss = new FormData();
 
+        sssssss.append('image', { uri: response.uri, name: 'picture.jpg', type: 'image/jpg' });
+        sssssss.append('title', "sdgdsg");
+        // Create the config object for the POST
+        const config = {
+            method: 'POST',
+            'Accept': 'application/json',
+            body: sssssss
+        };
+        const rawResponse = await fetch('http://35.233.220.25:8000/api/image/', config).then(
+        )
+            .catch(err => { console.log(err); });
+        const content = await rawResponse.json();        
+
+        if (content.length === 0) {
+            self.setState({ isCamera: false, VideoData: [] });
+        }
+        else {
+            self.setState({ content: content, })
+            self.setState({
+                content: self.state.content.map(
+                    item => ({ ...item, bToggle: 0, beer_id: item.id })
+                )
+            })
+            self.setState({ isCamera: true })
+        }
+        })
+    }
     renderCamera() {
         return (
-
             <RNCamera
                 ref={ref => {
                     this.camera = ref;
@@ -123,42 +163,61 @@ export default class CameraScreen extends React.Component {
         this.setState(prevState => ({
             isCamera: !prevState.isCamera,
             content: [],
-            VideoData:[]
-          }));
+            VideoData: []
+        }));
     }
     navigatePage = () => {
         this.props.navigation.navigate("InfoScreen", { "BeerInfo": this.state.content });
     }
     renderCheckBox = (item, key) => {
         const BeerInfo = Object.assign({}, this.state.content[key]);
+        console.warn(this.state.content);
+        console.warn(this.state.VideoData.width);
+        console.warn(this.state.VideoData.height);
+        
         return (
-            <TouchableOpacity
-                key={key}
-                onPress={() => this.changeToggleState(BeerInfo.id)}
-                style={{
-                    position: 'absolute', top: wp("100%") / 3 * 4 * BeerInfo.y1 / 4032, left: wp("100%") * BeerInfo.x1 / 3024, width: wp("100%") * (BeerInfo.x2 - BeerInfo.x1) / 3024, height: wp("100%") / 3 * 4 * (BeerInfo.y2 - BeerInfo.y1) / 4032,
-                    borderWidth: wp("1%"),
-                    borderColor: '#FED52B'
-                }}>
-                {
-                    this.state.content[key].bToggle
-                        ?
-                        <Ionicons name="checkmark-circle-outline"
-                            size={25}
-                            style={{
-                                color: '#FED52B',
-                            }}
-                        />
-                        :
-                        <Ionicons name="ellipse-outline"
-                            size={25}
-                            style={{
-                                color: '#FED52B',
-                            }}
-                        />
-                }
+            this.state.content[key].bToggle
+                ?
+                <TouchableOpacity
+                    key={key}
+                    onPress={() => this.changeToggleState(BeerInfo.id)}
+                    style={{
+                        position: 'absolute', top: wp("100%") / 3 * 4 * BeerInfo.y1 / this.state.VideoData.height, left: wp("100%") * BeerInfo.x1 / this.state.VideoData.width, width: wp("100%") * (BeerInfo.x2 - BeerInfo.x1) / this.state.VideoData.width, height: wp("100%") / 3 * 4 * (BeerInfo.y2 - BeerInfo.y1) / this.state.VideoData.height,
+                        borderWidth: wp("1%"),
+                        borderColor: '#6EC93A'
+                    }}>
+                    <Image
+                        source={require("../../../assets/images/check.png")}
+                        style={{
+                            left: -hp('1.5%'),
+                            height: hp('3%'),
+                            resizeMode: "contain"
+                        }}
+                    />
+                </TouchableOpacity>
+                :
+                <TouchableOpacity
+                    key={key}
+                    onPress={() => this.changeToggleState(BeerInfo.id)}
+                    style={{
+                        position: 'absolute', top: wp("100%") / 3 * 4 * BeerInfo.y1 / this.state.VideoData.height, left: wp("100%") * BeerInfo.x1 / this.state.VideoData.width, width: wp("100%") * (BeerInfo.x2 - BeerInfo.x1) / this.state.VideoData.width, height: wp("100%") / 3 * 4 * (BeerInfo.y2 - BeerInfo.y1) / this.state.VideoData.height,
+                        borderWidth: wp("1%"),
+                        borderColor: '#FED52B'
+                    }}>
 
-            </TouchableOpacity>
+                    <Image
+                        source={require("../../../assets/images/uncheck.png")}
+                        style={{
+                            left: -hp('1.5%'),
+                            height: hp('3%'),
+                            resizeMode: "contain"
+                        }}
+                    />
+                </TouchableOpacity>
+
+
+
+
         )
     }
     render() {
@@ -173,21 +232,39 @@ export default class CameraScreen extends React.Component {
 
                         />
                         {this.state.content.map((item, key) => (this.renderCheckBox(item, key)))}
-                        <View style={{ flex: 1, backgroundColor: "#FED52B", alignItems: "center", justifyContent: "space-around" }}>
+                        <View style={{ flex: 1, backgroundColor: "white", alignItems: "center", justifyContent: "space-around" }}>
+                            <View />
                             <TouchableOpacity
-                                style={[styles.flipButton, styles.picButton]}
+                                style={styles.searchflipButton}
                                 onPress={() => this.navigatePage()}
                             >
+                                <Image
+                                    source={require("../../../assets/images/search.png")}
+                                    style={{
+
+                                        height: hp('4%'),
+                                        resizeMode: "contain"
+                                    }}
+                                />
                                 <Text style={styles.flipText}> 찾기 </Text>
 
                             </TouchableOpacity>
+
                             <TouchableOpacity
-                                style={[styles.flipButton, styles.picButton]}
+                                style={styles.reloadflipButton}
                                 onPress={() => this.changeCameraState()}
                             >
+                                <Image
+                                    source={require("../../../assets/images/reload.png")}
+                                    style={{
+
+                                        height: hp('3.5%'),
+                                        resizeMode: "contain"
+                                    }}
+                                />
                                 <Text style={styles.flipText}> 다시 찍기 </Text>
                             </TouchableOpacity>
-
+                            <View />
                         </View>
                     </Fragment>
                     :
@@ -225,7 +302,7 @@ export default class CameraScreen extends React.Component {
                                     }}
                                 />
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => this.takePicture(camera)}>
+                            <TouchableOpacity onPress={() => this.showPicker()}>
                                 <Ionicons name="ios-images-outline"
                                     size={25}
                                     style={{
@@ -244,25 +321,31 @@ export default class CameraScreen extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 10,
         backgroundColor: '#000',
     },
-    flipButton: {
-        flex: 0.3,
-        height: 15,
-        width:300,
-        marginHorizontal: 2,
-        borderRadius: 8,
-        borderColor: 'white',
-        borderWidth: 1,
-        padding: 5,
+    searchflipButton: {
+        height: hp("5%"),
+        width: wp("70%"),
+        borderRadius: 30,
+        backgroundColor: "#FED52B",
         alignItems: 'center',
         justifyContent: 'center',
+        flexDirection: "row"
     },
-
+    reloadflipButton: {
+        height: hp("5%"),
+        width: wp("70%"),
+        borderRadius: 30,
+        borderColor: 'black',
+        borderWidth: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: "row"
+    },
     flipText: {
-        color: 'white',
-        fontSize: 15,
+        color: 'black',
+        fontSize: wp("5%"),
+        left: -10
     },
 
     picButton: {
