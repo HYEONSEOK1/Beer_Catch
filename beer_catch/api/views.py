@@ -141,20 +141,14 @@ class BeerInfoView(APIView):
         if kwargs.get('beer_id') is None:
             beer_queryset = Beer.objects.all()
             beer_queryset_serializer = BeerInfoSerializer(beer_queryset, many=True)
-            result = [{'result' : 'success'}]
-            print(result + beer_queryset_serializer.data)
+
             # result.update(beer_queryset_serializer.data)
-            return Response(result + beer_queryset_serializer.data, status=status.HTTP_200_OK)
+            return Response(beer_queryset_serializer.data, status=status.HTTP_200_OK)
         else:
             user_id = request.GET.get('user_id', '00000000')
             beer_id = kwargs.get('beer_id')
             beer_serializer = BeerInfoSerializer(Beer.objects.get(beer_id=beer_id))
             result = {'result' : 'success'}
-            # result.update(beer_serializer.data)
-            # if(Like.objects.get(beer=beer_id)):
-            #     result.update({'like' : 1})
-            # else:
-            #     result.update({'like' : 0})
             for key, value in beer_serializer.data.items():
                 if(key == 'review'):
                     for review in value:
@@ -172,7 +166,18 @@ class BeerInfoView(APIView):
 class BeerSearchView(APIView):
     def get(self, request,  **kwargs):
         if kwargs.get('beer_id') is None:
-            beer_queryset = Beer.objects.all()
+            type = request.GET.get('type', '')
+            code = request.GET.get('code', '')
+            if type != '' and code != '':
+                beer_queryset = Beer.objects.filter(type=type, country_code=code)
+            elif type != '':
+                beer_queryset = Beer.objects.filter(type=type)
+            elif code != '':
+                beer_queryset = Beer.objects.filter(country_code=code)
+            else:
+                beer_queryset = Beer.objects.all()
+
+
             beer_queryset_serializer = BeerSearchSerializer(beer_queryset, many=True)
             return Response(beer_queryset_serializer.data, status=status.HTTP_200_OK)
         else:
@@ -196,14 +201,18 @@ class BeerLikeView(APIView):
                 result = {'result' : 'success'}
                 beer_like_serializer.save()
                 result.update(beer_like_serializer.data)
+                beer = Beer.objects.get(beer_id=beer_id)
+                beer.total_beer_like += 1
+                beer.save()
                 return Response(result, status=status.HTTP_201_CREATED)
+
             return Response(beer_like_serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(beer_like_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request,  **kwargs):
         if kwargs.get('beer_like_id') is None:
-            beer_like_queryset = Like.objects.all()
+            beer_like_queryset = BeerLike.objects.all()
             beer_like_queryset_serializer = BeerLikeSerializer(beer_like_queryset, many=True)
             return Response(beer_like_queryset_serializer.data, status=status.HTTP_200_OK)
         else:

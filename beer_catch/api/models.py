@@ -55,9 +55,11 @@ class Beer(models.Model):
     country_name = models.CharField(max_length=200, null=True)
     alcohol = models.CharField(max_length=20, null=True)
     type = models.CharField(max_length=20, null=True)
+    detail_type = models.CharField(max_length=20, blank=True, default='')
     image = models.ImageField(upload_to='beer', null=True, storage=OverwriteStorage())
     image_url = models.CharField(max_length=200, null=True)
     total_rate = models.CharField(max_length=100, default='0.0')
+    total_beer_like = models.IntegerField(default=0)
 
     class Meta:
         db_table = "Beer"
