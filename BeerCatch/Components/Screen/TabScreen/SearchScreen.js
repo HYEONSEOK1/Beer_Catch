@@ -7,6 +7,8 @@ import Flag from 'react-native-flags';
 import axios from 'axios';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import LinearGradient from "react-native-linear-gradient";
+import { TouchableOpacity } from "react-native-gesture-handler";
+const PARALLAX_HEADER_HEIGHT = hp('20%');
 export default class SearchScreen extends Component {
 
   state = {
@@ -65,35 +67,38 @@ export default class SearchScreen extends Component {
 
     //   />
     // );
+    let BeerInfo = [];
+    BeerInfo.push({ "beer_id": item.beer_id, "bToggle": 1 })
     return (
-      <LinearGradient colors={['#FED52B', '#FEB82B']}
-        start={{ x: 0.0, y: 0.0 }}
-        end={{ x: 1.0, y: 1.0 }}
-        style={styles.cardStyle}>
-        <Image source = {{uri: item.image_url}} style={styles.imageStyle} />
-        <View style={{ flexDirection: 'column', flex: 1, }}>
+      <TouchableOpacity
+        onPress={() => this.props.navigation.navigate("InfoScreen", { "BeerInfo": BeerInfo })}
+      >
+        <View
+          style={styles.cardStyle}>
+          <Image source={{ uri: item.image_url }} style={styles.imageStyle} />
+          <View style={{ flexDirection: 'column', flex: 1, paddingLeft:wp('2%'),}}>
 
-          <View style={{ flex: 1, paddingTop : 10}}>
-            <Text style={styles.txtNamefont}>{item.kor_name} ( {item.eng_name} )</Text>
+            <View style={{ flex: 1, paddingTop: 10 }}>
+              <Text style={styles.txtNamefont}>{item.kor_name} ( {item.eng_name} )</Text>
+            </View>
+
+            <View style={{ flex: 1, }}>
+              <Text style={styles.txtBreweryfont}>{item.kor_company_name} | {item.eng_company_name}</Text>
+            </View>
+
+            <View style={{ flex: 1, flexDirection: "row" }} >
+              <Flag code={item.country_code} size={16} />
+              <Text style={styles.txtBreweryfont}> {item.country_name} </Text>
+            </View>
+
+            <View style={{ flex: 1, flexDirection: "row", marginBottom: 10 }}>
+              <Ionicons name="star" style={{ fontSize: 13, height: 13, color: '#FEB82B', }} />
+              <Text style={styles.txtBreweryfont}>{item.total_rate}</Text>
+            </View>
           </View>
-
-          <View style={{ flex: 1, }}>
-            <Text style={styles.txtBreweryfont}>{item.kor_company_name} | {item.eng_company_name}</Text>
           </View>
-
-          <View style={{ flex: 1, flexDirection: "row" }} >
-            <Flag code={item.country_code} size={16} />
-            <Text style={styles.txtBreweryfont}> {item.country_name} </Text>
-          </View>
-
-          <View style={{ flex: 1, flexDirection: "row", marginBottom: 10 }}>
-            <Ionicons name="star" style={{ fontSize: 13, height: 13, color: '#ddd', }} />
-            <Text style={styles.txtBreweryfont}>{item.rate}</Text>
-          </View>
-        </View>
-
-      </LinearGradient>
-
+   
+      </TouchableOpacity>
     );
   }
 
@@ -101,24 +106,46 @@ export default class SearchScreen extends Component {
     const { spinnerVisibility } = this.state;
     return (
       <SafeAreaView style={styles.safeAreaViewStyle}>
-        <StatusBar barStyle={"light-content"} />
         <View style={styles.container}>
-          <SearchBar
-            darkMode
-            placeholder="Search"
-            spinnerVisibility={spinnerVisibility}
-            style={{ backgroundColor: "#FED52B" }}
-            onChangeText={(text) => {
-              if (text.length === 0)
+          <View style={styles.header}>
+            <LinearGradient
+              style={styles.Linearheader}
+              colors={['#FED52B', '#FEB82B']}
+              start={{ x: 0.0, y: 0.25 }}
+              end={{ x: 0.5, y: 1.0 }}
+            />
+            <Image source={require('../../../assets/images/backgroundCircle.png')}
+              style={{
+                width: wp('100%'),
+                height: PARALLAX_HEADER_HEIGHT,
+                tintColor: 'white',
+                position: "absolute"
+              }}
+            />
+            
+
+            <SearchBar
+              placeholder="Search"
+              spinnerVisibility={spinnerVisibility}
+              
+              
+              searchIconImageStyle={{tintColor:"gray"}}
+              clearIconImageStyle={{tintColor:"gray"}}
+              onChangeText={(text) => {
+                if (text.length === 0)
+                  this.setState({ spinnerVisibility: false });
+                else this.setState({ spinnerVisibility: true });
+                this.filterList(text);
+              }}
+              onClearPress={() => {
                 this.setState({ spinnerVisibility: false });
-              else this.setState({ spinnerVisibility: true });
-              this.filterList(text);
-            }}
-            onClearPress={() => {
-              this.filterList("");
-            }}
-          />
+                this.filterList("");
+              }}
+            />
+          </View>
+        
           <View style={styles.flatListStyle}>
+            
             <FlatList
               data={this.state.dataSource}
               renderItem={({ item }) => this.renderItem(item)}
@@ -134,17 +161,21 @@ export default class SearchScreen extends Component {
 const styles = StyleSheet.create({
   safeAreaViewStyle: {
     flex: 1,
-    backgroundColor: "#ffffcc",
+    backgroundColor: "white",
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "white",
   },
   imageStyle: {
-    resizeMode :"contain",
-    width: wp('15%'),
-    height: hp('15%'),
-    margin: wp('3%'),
-    shadowColor: '#000',
-    shadowOffset: { width: 5, height: 5 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
+    resizeMode: "contain",
+    width: wp('10%'),
+    height: hp('10%'),
+    margin: wp('1%'),
+    // shadowColor: '#000',
+    // shadowOffset: { width: 5, height: 5 },
+    // shadowOpacity: 0.2,
+    // shadowRadius: 4,
   },
   flatListStyle: {
     marginTop: hp("2%"),
@@ -153,45 +184,33 @@ const styles = StyleSheet.create({
     justifyContent: "center",
 
   },
-  cardShadowStyle: {
-    ...Platform.select({
-      ios: {
-        shadowRadius: 3,
-        shadowOpacity: 0.4,
-        shadowColor: "#000",
-        shadowOffset: {
-          width: 3,
-          height: 3,
-        },
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
-  },
   cardStyle: {
-    marginTop: 16,
-    width: wp("88%"),
-    flexDirection: 'row',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 5, height: 5 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 7,
-    backgroundColor: 'white',
-    alignItems: "center",
-    justifyContent: "center",
+    width: wp("90%"),
+        flex: 1,
+        paddingLeft: 5,
+        paddingRight: 10,
+        shadowColor: 'black',
+        shadowOpacity: 0.7,
+        shadowOffset: { width: 20, height: 20 },
+        shadowRadius: 10,
+        elevation: 3,
+        borderRadius: 1,
+        backgroundColor: "white",
+        flexDirection:"row",
 
+  
+        margin: 2,
+        shadowColor: 'black',
+        shadowOpacity: 0.7,
+        shadowOffset: { width: 20, height: 20 },
+        shadowRadius: 10,
+        elevation: 3,
+        borderRadius: 10,
+        backgroundColor: "white",
+
+        
   },
-  container: {
-    ...Platform.select({
-      android: {
-        top: 24,
-      },
-    }),
-    backgroundColor: "#ffffcc",
-  },
+
   welcome: {
     margin: 10,
     fontSize: 20,
@@ -213,13 +232,31 @@ const styles = StyleSheet.create({
   txtNamefont: {
     fontSize: 16,
     color: '#111',
-    fontFamily: 'BMYEONSUNG',
-    marginTop: 5,
+    fontFamily: 'NanumSquareRoundEB',
+    marginBottom: 5,
   },
   txtBreweryfont: {
     fontSize: 12,
     color: '#444',
     fontFamily: 'BMYEONSUNG'
   },
-
+  Linearheader: {
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#fff',
+    height: PARALLAX_HEADER_HEIGHT,
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    right: 0,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  header: {
+    alignItems: 'center',
+    height: PARALLAX_HEADER_HEIGHT,
+    backgroundColor: "yellow",
+    justifyContent: 'center',
+  },
 })

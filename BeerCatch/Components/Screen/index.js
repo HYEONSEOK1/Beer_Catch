@@ -10,6 +10,7 @@ import LoginScreen from './LoginScreen';
 import { Fragment } from 'react';
 import SingUpScreen from './LoginScreen/SingUpScreen';
 import CameraScreen from './CameraScreen';
+import RankingInfoScreen from './TabScreen/RankingScreen/RankingTabScreen/RankingInfoScreen';
 
 const Stack = createStackNavigator();
 
@@ -35,7 +36,7 @@ const Stack = createStackNavigator();
 
 export default class index extends Component {
     state = {
-        _isLogin: true,
+        _isLogin: false,
     };
     changeLoginStatus = (ss) => {
         this.setState({
@@ -65,7 +66,11 @@ export default class index extends Component {
                                     headerShown: false
                                 }}
                                 component={InfoScreen} />
-                
+                              <Stack.Screen name="RankingInfoScreen" 
+                                options={{
+                                    headerShown: true
+                                }}
+                                component={RankingInfoScreen} />
                             </Fragment>
                         ) :
                         (
