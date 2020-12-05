@@ -322,14 +322,16 @@ class RecommendView(APIView):
         like_queryset = BeerLike.objects.filter(user_id=user_id)
         if case == 'country':
             dic={}
+            beer_list=[]
             for like in like_queryset:
                 beer = Beer.objects.get(beer_id=like.beer_id.beer_id)
+                beer_list.append(beer.beer_id)
                 if beer.country_code in dic:
                     dic[beer.country_code] += 1
                 else:
                     dic[beer.country_code] = 1
             country_list = [max_key for max_key, value in dic.items() if max(dic.values()) == value]
-            beer_queryset = Beer.objects.filter(country_code__in=country_list).order_by('-total_beer_like','eng_name')[:3]
+            beer_queryset = Beer.objects.filter(country_code__in=country_list).exclude(beer_id__in=beer_list).order_by('-total_beer_like','eng_name')[:3]
         else: # type
             dic={}
             beer_list=[]
