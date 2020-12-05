@@ -335,7 +335,7 @@ class RecommendView(APIView):
             beer_list=[]
             for like in like_queryset:
                 beer = Beer.objects.get(beer_id=like.beer_id.beer_id)
-                list.append(beer['beer_id'])
+                list.append(beer.beer_id)
                 if beer.type in dic:
                     dic[beer.type] += 1
                 else:
