@@ -168,6 +168,7 @@ class BeerSearchView(APIView):
         if kwargs.get('beer_id') is None:
             type = request.GET.get('type', '')
             code = request.GET.get('code', '')
+
             if type != '' and code != '':
                 beer_queryset = Beer.objects.filter(type=type, country_code=code)
             elif type != '':
@@ -176,7 +177,7 @@ class BeerSearchView(APIView):
                 beer_queryset = Beer.objects.filter(country_code=code)
             else:
                 beer_queryset = Beer.objects.all()
-
+            beer_queryset = beer_queryset.order_by('-total_beer_like','eng_name')
 
             beer_queryset_serializer = BeerSearchSerializer(beer_queryset, many=True)
             return Response(beer_queryset_serializer.data, status=status.HTTP_200_OK)
@@ -205,8 +206,12 @@ class BeerLikeView(APIView):
                 beer.total_beer_like += 1
                 beer.save()
                 return Response(result, status=status.HTTP_201_CREATED)
-
-            return Response(beer_like_serializer.data, status=status.HTTP_200_OK)
+            result = {'result' : 'delete'}
+            beer_like.delete()
+            beer = Beer.objects.get(beer_id=beer_id)
+            beer.total_beer_like -= 1
+            beer.save()
+            return Response(result, status=status.HTTP_200_OK)
         else:
             return Response(beer_like_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -309,3 +314,32 @@ class IngredientView(APIView):
             ingredient_object = Ingredient.objects.get(ingredient_id=ingredient_id)
             ingredient_object.delete()
             return Response("delete ok", status=status.HTTP_200_OK)
+
+class RecommendView(APIView):
+    def get(self, request,  **kwargs):
+        user_id = request.GET.get('user_id', '')
+        case = request.GET.get('case', '')
+        like_queryset = BeerLike.objects.filter(user_id=user_id)
+        if case == 'country':
+            dic={}
+            for like in like_queryset:
+                beer = Beer.objects.get(beer_id=like.beer_id.beer_id)
+                if beer.country_code in dic:
+                    dic[beer.country_code] += 1
+                else:
+                    dic[beer.country_code] = 1
+            country_list = [max_key for max_key, value in dic.items() if max(dic.values()) == value]
+            beer_queryset = Beer.objects.filter(country_code__in=country_list).order_by('-total_beer_like','eng_name')
+        else: # type
+            dic={}
+            for like in like_queryset:
+                beer = Beer.objects.get(beer_id=like.beer_id.beer_id)
+                if beer.type in dic:
+                    dic[beer.type] += 1
+                else:
+                    dic[beer.type] = 1
+            type_list = [max_key for max_key, value in dic.items() if max(dic.values()) == value]
+            beer_queryset = Beer.objects.filter(type__in=type_list).order_by('-total_beer_like','eng_name')
+
+        beer_queryset_serializer = BeerSearchSerializer(beer_queryset, many=True)
+        return Response(beer_queryset_serializer.data, status=status.HTTP_200_OK)

@@ -25,4 +25,5 @@ urlpatterns = [
     path('reviewlike/<int:review_like_id>', views.ReviewLikeView.as_view()),
     path('ingredient/', views.IngredientView.as_view()),
     path('ingredient/<int:ingredient_id>', views.IngredientView.as_view()),
+    path('recommend/', views.RecommendView.as_view()),
 ]
