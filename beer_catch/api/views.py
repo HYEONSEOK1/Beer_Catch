@@ -341,7 +341,7 @@ class RecommendView(APIView):
                 else:
                     dic[beer.type] = 1
             type_list = [max_key for max_key, value in dic.items() if max(dic.values()) == value]
-            beer_queryset = Beer.objects.filter(type__in=type_list).exculde(beer_id__in=beer_list).order_by('-total_beer_like','eng_name')[:3]
+            beer_queryset = Beer.objects.filter(type__in=type_list).exclude(beer_id__in=beer_list).order_by('-total_beer_like','eng_name')[:3]
 
         beer_queryset_serializer = BeerSearchSerializer(beer_queryset, many=True)
         return Response(beer_queryset_serializer.data, status=status.HTTP_200_OK)
