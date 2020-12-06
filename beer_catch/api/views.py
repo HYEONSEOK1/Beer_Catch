@@ -194,6 +194,23 @@ class BeerSearchView(APIView):
             beer_new_queryset_serializer = BeerSearchSerializer(beer_new_queryset, many=True)
             return Response(beer_queryset_serializer.data + beer_new_queryset_serializer.data, status=status.HTTP_200_OK)
 
+class MyBeerView(APIView):
+    def get(self, request,  **kwargs):
+            user_id = request.GET.get('user_id', '00000000000')
+            beer_like = BeerLike.objects.filter(user_id=user_id)
+            beer_list = []
+            for like in beer_like:
+                beer_list.append(like.beer_id.beer_id)
+            beer_queryset = Beer.objects.filter(beer_id__in=beer_list).order_by('eng_name')
+            beer_queryset_serializer = BeerSearchSerializer(beer_queryset, many=True)
+            return Response(beer_queryset_serializer.data, status=status.HTTP_200_OK)
+
+class MyReviewView(APIView):
+    def get(self, request,  **kwargs):
+            user_id = request.GET.get('user_id', '00000000000')
+            review_queryset = Review.objects.filter(user_id=user_id).order_by('date')
+            review_queryset_serializer = ReviewSerializer(review_queryset, many=True)
+            return Response(review_queryset_serializer.data, status=status.HTTP_200_OK)
 
 class BeerLikeView(APIView):
     def post(self, request):
@@ -253,13 +270,18 @@ class ReviewLikeView(APIView):
             except ReviewLike.DoesNotExist:
                 result = {'result' : 'success'}
                 review_like_serializer.save()
-                review_id = request.data.get('review_id')
                 review = Review.objects.get(review_id=review_id)
                 review.total_like += 1
                 review.save()
                 result.update(review_like_serializer.data)
                 return Response(result, status=status.HTTP_201_CREATED)
-            return Response(review_like_serializer.data, status=status.HTTP_200_OK)
+            result = {'result' : 'delete'}
+            review_like.delete()
+            review = Review.objects.get(review_id=review_id)
+            review.total_like -= 1
+            review.save()
+            result.update(review_like_serializer.data)
+            return Response(result, status=status.HTTP_200_OK)
         else:
             return Response(review_like_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -352,3 +374,20 @@ class RecommendView(APIView):
 
         beer_queryset_serializer = BeerSearchSerializer(beer_queryset, many=True)
         return Response(beer_queryset_serializer.data, status=status.HTTP_200_OK)
+
+
+class SizeView(APIView):
+    def get(self, request,  **kwargs):
+        user_id = request.GET.get('user_id', '0000000000')
+        beer_like = BeerLike.objects.filter(user_id=user_id)
+        beer_list = []
+        for like in beer_like:
+            beer_list.append(like.beer_id.beer_id)
+        beer_queryset = Beer.objects.filter(beer_id__in=beer_list)
+        beer_size = beer_queryset.count()
+
+        review_queryset = Review.objects.filter(user_id=user_id)
+        review_size = review_queryset.count()
+        result = {'beer_size' : beer_size, 'review_size' : review_size}
+
+        return Response(result, status=status.HTTP_200_OK)
