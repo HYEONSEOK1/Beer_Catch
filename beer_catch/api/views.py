@@ -161,6 +161,11 @@ class BeerInfoView(APIView):
                             review.update({'review_like' : 0})
 
                 result.update({key : value})
+            beer_like = BeerLike.objects.filter(beer_id=beer_id, user_id=user_id)
+            if beer_like.count() == 1:
+                result.update({'beer_like' : 1})
+            else:
+                result.update({'beer_like' : 0})
             return Response(result, status=status.HTTP_200_OK)
 
 class BeerSearchView(APIView):
