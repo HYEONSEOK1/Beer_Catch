@@ -29,4 +29,5 @@ urlpatterns = [
     path('my_beer/', views.MyBeerView.as_view()),
     path('my_review/', views.MyReviewView.as_view()),
     path('size/', views.SizeView.as_view()),
+    path('nickname/', views.NicknameView.as_view()),
 ]

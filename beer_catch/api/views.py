@@ -8,6 +8,7 @@ from django.db.models import Avg
 from api.models import ImageUpload, User, Beer, Review, BeerLike, ReviewLike, Ingredient
 from api.serializers import ImageUploadSerializer, UserSerializer, BeerSerializer, BeerInfoSerializer, BeerSearchSerializer
 from api.serializers import ReviewSerializer, BeerLikeSerializer, ReviewLikeSerializer, IngredientSerializer, BeerRateSearchSerializer
+from api.serializers import NicknameSerializer
 
 def index(request):
     return render(request, "api/index.html")
@@ -390,4 +391,19 @@ class SizeView(APIView):
         review_size = review_queryset.count()
         result = {'beer_size' : beer_size, 'review_size' : review_size}
 
+        return Response(result, status=status.HTTP_200_OK)
+
+class NicknameView(APIView):
+    def post(self, request):
+        # nickname_serializer = IngredientSerializer(data=request.data)
+        user_id = request.data.get('user_id')
+        nickname = request.data.get('nickname')
+        user = User.objects.get(user_id=user_id)
+        try:
+            user.nickname = nickname
+        except IntegrityError:
+            result = {'result' : 'error'}
+            return Response(result, status=status.HTTP_200_OK)
+        user.save()
+        result = {'result' : 'success', 'user_id' : user_id, 'nickname' : nickname}
         return Response(result, status=status.HTTP_200_OK)
