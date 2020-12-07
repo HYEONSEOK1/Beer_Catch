@@ -3,6 +3,7 @@ from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Avg
+from django.db import IntegrityError
 
 # Create your views here.
 from api.models import ImageUpload, User, Beer, Review, BeerLike, ReviewLike, Ingredient
@@ -400,9 +401,9 @@ class NicknameView(APIView):
         user = User.objects.get(user_id=user_id)
         try:
             user.nickname = nickname
+            user.save()
         except IntegrityError:
             result = {'result' : 'error'}
             return Response(result, status=status.HTTP_200_OK)
-        user.save()
         result = {'result' : 'success', 'user_id' : user_id, 'nickname' : nickname}
         return Response(result, status=status.HTTP_200_OK)
