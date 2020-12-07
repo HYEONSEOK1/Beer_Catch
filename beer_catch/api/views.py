@@ -8,7 +8,6 @@ from django.db.models import Avg
 from api.models import ImageUpload, User, Beer, Review, BeerLike, ReviewLike, Ingredient
 from api.serializers import ImageUploadSerializer, UserSerializer, BeerSerializer, BeerInfoSerializer, BeerSearchSerializer
 from api.serializers import ReviewSerializer, BeerLikeSerializer, ReviewLikeSerializer, IngredientSerializer, BeerRateSearchSerializer
-from api.serializers import NicknameSerializer
 
 def index(request):
     return render(request, "api/index.html")
