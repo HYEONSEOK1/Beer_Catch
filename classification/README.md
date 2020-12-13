@@ -14,7 +14,7 @@ We experimented with ReXNet_V1-1.0x, Resnet34, Resnet50, EfficientNet-b0.
 Python 3.8 or later is recommended. To satisfy the dependency at once, do the following:
 ```bash
 $ pip install -r requirements.txt
-```"
+```
 If you use anaconda virtual enviroment, type this command "conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch"
 
 ## Environments
