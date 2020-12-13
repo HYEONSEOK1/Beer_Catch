@@ -1,6 +1,6 @@
 # Beer Catch - Image Classification
 
-Only how to train for image classification are provided.  
+Only the way to train for image classification is provided.  
 Because the classification process is included in one pipeline, it can be checked in the object detection module.
 
 ## Pretrained Model
