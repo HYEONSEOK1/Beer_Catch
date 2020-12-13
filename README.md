@@ -7,7 +7,7 @@
 The project name is **"BeerCatch"**. It means that users can quickly "catch" up on beer they don't know.
 
 ## Purpose
-####Beercatch is an app that allows you to view information about each beer and to evaluate and share information easily.  
+#### Beercatch is an app that allows you to view information about each beer and to evaluate and share information easily.  
 
 * It will give consumers who are not familiar with beer a chance to try other beers.
 * Above all, beercatch provides quick and concise information about different beers by taking pictures.  
