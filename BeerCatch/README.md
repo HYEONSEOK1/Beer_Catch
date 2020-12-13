@@ -2,5 +2,6 @@
 
 Python 3.8 or later is recommended. To satisfy the dependency at once, do the following:
 ```bash
-$ pip install -r requirements.txt
+$ npm install  
+& react-native run-android
 ```
