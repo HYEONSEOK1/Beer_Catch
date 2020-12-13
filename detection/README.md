@@ -43,5 +43,5 @@ $ python train.py --data coco.yaml --cfg yolov5s.yaml --weights '' --batch-size 
 Also, You can use DoTrain.ipynb in Jupyter Notebook. We used this when training.
 
 ## About
-If you have any inquiries or need supports, email us at kywoo26@gmail.com
+If you have any inquiries or need supports, email us at kywoo26@gmail.com.  
 We don't provide image datasets and models(.pt) in this repository.
