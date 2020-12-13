@@ -1,5 +1,5 @@
 # Beer_Catch
-<img src="https://user-images.githubusercontent.com/63901518/102020818-eb8e8a80-3dbe-11eb-9d45-1ba4e4db6180.png" width="200">  
+<img src="https://user-images.githubusercontent.com/63901518/102020818-eb8e8a80-3dbe-11eb-9d45-1ba4e4db6180.png" width="150">  
 [Discription of Mobile](https://github.com/HYEONSEOK1/Beer_Catch/tree/master/BeerCatch)  
 [Discription of Object Detection](https://github.com/HYEONSEOK1/Beer_Catch/tree/master/detection)  
 [Discription of Image Classification](https://github.com/HYEONSEOK1/Beer_Catch/tree/master/classification)
