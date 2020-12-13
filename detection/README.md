@@ -19,11 +19,11 @@ $ pip install -r requirements.txt
 
 ## Environments
 
-These may be run in any of the following up-to-date verified environments (with all dependencies including [CUDA](https://developer.nvidia.com/cuda)/[CUDNN](https://developer.nvidia.com/cudnn), [Python](https://www.python.org/) and [PyTorch](https://pytorch.org/) preinstalled):
+These may be run in any of the following up-to-date verified environments (with all dependencies including [CUDA](https://developer.nvidia.com/cuda)/[CUDNN](https://developer.nvidia.com/cudnn), [Python](https://www.python.org/) and [PyTorch](https://pytorch.org/) preinstalled):  
 Inference and learning through gpu are recommended.  
 We used GCP with GPU, but you can use either cpu or gpu environment.
 
-- **Google Cloud Platform** Deep Learning VM. See [GCP Quickstart Guide](https://github.com/ultralytics/yolov5/wiki/GCP-Quickstart) 
+- **Google Cloud Platform** [Getting Started with Google Cloud Platform](https://cloud.google.com/gcp/getting-started/?hl=ko) 
 
 ## Inference
 
