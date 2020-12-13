@@ -20,14 +20,16 @@ The project name is **"BeerCatch"**. It means that users can quickly "catch" up 
 * Recommended services are provided to those who are considering which beer to choose. Based on the contents searched and reviewed by the user, it recommends the preferred beer.
  
 ## Application
-### * Search
+#### These are the functions and UI/UX provided by the application.
+
+### *Search*
 <img src = "https://user-images.githubusercontent.com/63901518/102020991-10cfc880-3dc0-11eb-9c76-2ba8854830eb.png" width ="150" /> <img src = "https://user-images.githubusercontent.com/63901518/102021024-4a083880-3dc0-11eb-816a-2f1cfa9d3675.png" width ="150" />
 
-### * Information & Review
+### *Information & Review*
 <img src = "https://user-images.githubusercontent.com/63901518/102021009-33fa7800-3dc0-11eb-8e48-ca4ccf9f49b5.png" width ="150" /> <img src = "https://user-images.githubusercontent.com/63901518/102021012-378dff00-3dc0-11eb-9458-8a93504c68e9.png" width ="150" />
 
-### * Ranking
+### *Ranking*
 <img src = "https://user-images.githubusercontent.com/63901518/102021031-54c2cd80-3dc0-11eb-8e3c-6f4080ad68bb.png" width ="150" /> <img src = "https://user-images.githubusercontent.com/63901518/102021033-55f3fa80-3dc0-11eb-95da-a746401a8d8b.png" width ="150" />
 
-### * Recommend
+### *Recommend*
 <img src = "https://user-images.githubusercontent.com/63901518/102021042-5a201800-3dc0-11eb-8ce5-285ef9fbfdd2.png" width ="150" />
